@@ -1,8 +1,9 @@
 import React from "react";
 import { NUM_OF_GUESSES_ALLOWED } from "../../constants";
+import { checkGuess } from "../../game-helpers";
 import { range } from "../../utils";
 
-function GuessResults({ guessList }) {
+function GuessResults({ guessList, answer }) {
   const guessesList = guessList.map((object) => object["guess"].split(""));
   console.log("guessesList:", guessesList);
 
@@ -13,11 +14,19 @@ function GuessResults({ guessList }) {
           guessesList[idx] || range(1, NUM_OF_GUESSES_ALLOWED);
         return (
           <p className="guess" key={row}>
-            {cellContent.map((cell, idx2) => (
-              <span className="cell" key={idx2}>
-                {typeof cell !== "string" ? "" : cell}
-              </span>
-            ))}
+            {cellContent.map((cell, idx2) => {
+              const isItCorrect = checkGuess(cellContent.join(""), answer);
+              return (
+                <span
+                  className={`cell ${
+                    typeof cell !== "string" ? "" : isItCorrect[idx2].status
+                  }`}
+                  key={idx2}
+                >
+                  {typeof cell !== "string" ? "" : cell}
+                </span>
+              );
+            })}
           </p>
         );
       })}

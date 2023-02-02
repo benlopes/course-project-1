@@ -18,7 +18,7 @@ function Game() {
   return (
     <>
       {/* <GuessList guessList={guessList} /> */}
-      <GuessResults guessList={guessList} />
+      <GuessResults guessList={guessList} answer={answer} />
       <GuessInput
         guess={guess}
         setGuess={setGuess}
