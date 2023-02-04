@@ -2,50 +2,74 @@ import React from "react";
 import { NUM_OF_GUESSES_ALLOWED } from "../../constants";
 import { checkGuess } from "../../game-helpers";
 import { range } from "../../utils";
+import BannerResult from "../BannerResult/BannerResult";
 
 function GuessResults({ guessList, answer }) {
+  const [isCorrect, setIsCorrect] = React.useState(false);
+
   const guessesList = guessList.map((object) => object["guess"].split(""));
-  console.log("guessesList:", guessesList);
+
+  if (guessesList.length > 0 && isCorrect === false) {
+    const matchingResult = guessesList.map((el) =>
+      checkGuess(el.join(""), answer)
+    );
+
+    matchingResult.forEach((objList, idx) => {
+      const verification = objList.every((object) => {
+        return object.status === "correct";
+      });
+
+      if (verification) setIsCorrect(!isCorrect);
+    });
+  }
 
   return (
-    <div className="guess-results">
-      {range(0, NUM_OF_GUESSES_ALLOWED).map((row, idx) => {
-        const cellContent =
-          guessesList[idx] || range(1, NUM_OF_GUESSES_ALLOWED);
-        return (
-          <p className="guess" key={row}>
-            {cellContent.map((cell, idx2) => {
-              const isItCorrect = checkGuess(cellContent.join(""), answer);
-              return (
-                <span
-                  className={`cell ${
-                    typeof cell !== "string" ? "" : isItCorrect[idx2].status
-                  }`}
-                  key={idx2}
-                >
-                  {typeof cell !== "string" ? "" : cell}
-                </span>
-              );
-            })}
-          </p>
-        );
-      })}
-    </div>
-    // <div className="guess-results">
-    //   {range(0, NUM_OF_GUESSES_ALLOWED).map((row, idx) => (
-    //     <p className="guess" key={row}>
-    //       {guessesList.map((cell) => {
-    //         return cell.map((letter) => (
-    //           <span className="cell" key={Math.random()}>
-    //             {letter}
-    //           </span>
-    //         ));
-    //       })}
-    //     </p>
-    //   ))}
-    // </div>
+    <>
+      <div className="guess-results">
+        {range(0, NUM_OF_GUESSES_ALLOWED).map((row, idx) => {
+          const cellContent =
+            guessesList[idx] || range(1, NUM_OF_GUESSES_ALLOWED);
+          return (
+            <p className="guess" key={row}>
+              {cellContent.map((cell, idx2) => {
+                const checkingOutput = checkGuess(cellContent.join(""), answer);
+                return (
+                  <span
+                    className={`cell ${
+                      typeof cell !== "string"
+                        ? ""
+                        : checkingOutput[idx2].status
+                    }`}
+                    key={idx2}
+                  >
+                    {typeof cell !== "string" ? "" : cell}
+                  </span>
+                );
+              })}
+            </p>
+          );
+        })}
+      </div>
+      {isCorrect || guessesList.length === NUM_OF_GUESSES_ALLOWED
+        ? BannerResult(isCorrect, answer, guessesList.length)
+        : ""}
+    </>
   );
 }
+
+// <div className="guess-results">
+//   {range(0, NUM_OF_GUESSES_ALLOWED).map((row, idx) => (
+//     <p className="guess" key={row}>
+//       {guessesList.map((cell) => {
+//         return cell.map((letter) => (
+//           <span className="cell" key={Math.random()}>
+//             {letter}
+//           </span>
+//         ));
+//       })}
+//     </p>
+//   ))}
+// </div>
 
 // function GuessResults({ guessList }) {
 //   // console.info(guessList);
